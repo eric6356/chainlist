@@ -9,7 +9,6 @@ contract('ChainList', function (accounts) {
      var articleDescription = 'Description for article 1';
      var articlePrice = 10;
      var articlePriceWei = web3.toWei(articlePrice, 'ether');
-     var watcher = null;
 
     // Test case: check initial values
     it('should be initialized with empty values', function () {
@@ -47,7 +46,6 @@ contract('ChainList', function (accounts) {
     it('should trigger an event when a new article is sold', function () {
         return ChainList.deployed().then(function (instance) {
             chainListInstance = instance;
-            watcher = chainListInstance.sellArticleEvent();
             return chainListInstance.sellArticle(
                 articleName,
                 articleDescription,
