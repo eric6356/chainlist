@@ -39,8 +39,14 @@ App = {
         $.getJSON('ChainList.json', function (chainListArtifact) {
             // Get the necessary contract artifact file and use it to instantiate a truffle contract abstraction.
             App.contracts.ChainList = TruffleContract(chainListArtifact);
+
             // Set the provider for our contract.
             App.contracts.ChainList.setProvider(App.web3Provider);
+
+            // listen to events.
+            App.listenToEvents();
+
+            // Retrieve the article from the smart contract.
             App.reloadArticles();
         })
     },
@@ -98,10 +104,21 @@ App = {
                 _price,
                 {from: App.account, gas: 5000000}
             )
-        }).then(function (result) {
-            App.reloadArticles();
         }).catch(function (reason) {
             console.log(reason.message);
+        })
+    },
+
+    // Listen to events raised from the contract
+    listenToEvents: function () {
+        App.contracts.ChainList.deployed().then(function (instance) {
+            instance.sellArticleEvent(
+                {},
+                {fromBlock: 0, toBlock: 'latest'}
+            ).watch(function (error, event) {
+                $('#events').append('<li class="list-group-item">' + event.args._name + ' is for sale</li>');
+                App.reloadArticles();
+            })
         })
     }
 };
