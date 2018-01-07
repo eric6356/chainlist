@@ -1,7 +1,7 @@
 App = {
     web3Provider: null,
     contracts: {},
-    account: 0x0,
+    account: null, // Hex String
 
     init: function () {
         return App.initWeb3();
@@ -18,7 +18,7 @@ App = {
             web3 = new Web3(App.web3Provider);
         }
         App.displayAccountInfo();
-        return App.initContract();
+        App.initContract();
     },
 
     displayAccountInfo: function () {
@@ -52,7 +52,7 @@ App = {
         App.contracts.ChainList.deployed().then(function (instance) {
             return instance.getArticle.call();
         }).then(function (article) {
-            if (article[0] === 0x0) {
+            if (parseInt(article[0]) === 0x0) {
                 // no article
                 return;
             }
@@ -77,6 +77,31 @@ App = {
             articleRow.append(articleTemplate.html());
         }).catch(function (reason) {
             console.log(reason.message)
+        })
+    },
+
+    sellArticle: function () {
+        // Retrieve details of th the article
+        var _article_name = $('#article_name').val();
+        var _description = $('#article_description').val();
+        var _price = web3.toWei(parseInt($('#article_price').val() || 0), 'ether');
+
+        if ((_article_name.trim() === '') || (_price === 0)) {
+            // nothing to sell
+            return false;
+        }
+
+        App.contracts.ChainList.deployed().then(function (instance) {
+            return instance.sellArticle(
+                _article_name,
+                _description,
+                _price,
+                {from: App.account, gas: 5000000}
+            )
+        }).then(function (result) {
+            App.reloadArticles();
+        }).catch(function (reason) {
+            console.log(reason.message);
         })
     }
 };
