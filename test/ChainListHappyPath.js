@@ -9,6 +9,7 @@ contract('ChainList', function (accounts) {
      var articleDescription = 'Description for article 1';
      var articlePrice = 10;
      var articlePriceWei = web3.toWei(articlePrice, 'ether');
+     var watcher = null;
 
     // Test case: check initial values
     it('should be initialized with empty values', function () {
@@ -39,6 +40,27 @@ contract('ChainList', function (accounts) {
             assert.equal(data[1], articleName, 'article name must be ' + articleName);
             assert.equal(data[2], articleDescription, 'article description must be ' + articleDescription);
             assert.equal(data[3].toNumber(), articlePriceWei, 'article price must be ' + articlePriceWei);
+        })
+    });
+
+    // Test case: should check events
+    it('should trigger an event when a new article is sold', function () {
+        return ChainList.deployed().then(function (instance) {
+            chainListInstance = instance;
+            watcher = chainListInstance.sellArticleEvent();
+            return chainListInstance.sellArticle(
+                articleName,
+                articleDescription,
+                articlePriceWei,
+                {from: seller}
+            );
+        }).then(function () {
+            return watcher.get();
+        }).then(function (events) {
+            assert.equal(events.length, 1, 'should have received one event');
+            assert.equal(events[0].args._seller, seller, 'seller must be ' + seller);
+            assert.equal(events[0].args._name, articleName, 'article name must be ' + articleName);
+            assert.equal(events[0].args._price.toNumber(), articlePriceWei, 'article price must be ' + articlePriceWei);
         })
     })
 });
