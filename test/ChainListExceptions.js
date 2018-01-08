@@ -12,16 +12,6 @@ contract('ChainList', function (accounts) {
     var articlePrice = 10;
     var articlePriceWei = web3.toWei(articlePrice, 'ether');
 
-    // Test case: getting articles for sale when no article for sale yet
-    it('should throw an exception if you try to get articles for sale when there is no article at all', function () {
-        return ChainList.deployed().then(function (instance) {
-            chainListInstance = instance;
-            return chainListInstance.getArticlesForSale();
-        }).then(assert.fail).catch(function (reason) {
-            assert(reason.message.indexOf('revert') >= 0, 'error message must contain revert');
-        })
-    });
-
     // Test case: no article for sale yet
     it('should throw an exception if you try to buy an article when there is no article for sale', function () {
         return ChainList.deployed().then(function (instance) {

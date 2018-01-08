@@ -48,13 +48,14 @@ contract ChainList {
 
     // fetch the number of articles in the contract
     function getNumberOfArticles() public constant returns (uint) {
-        return (articleCounter);
+        return articleCounter;
     }
 
     // fetch and returns all article IDs available for sale
     function getArticlesForSale() public constant returns (uint[]) {
-        // there should be at least 1 article
-        require(articleCounter > 0);
+        if (articleCounter == 0) {
+            return new uint[](0);
+        }
 
         // prepare output arrays
         uint[] memory articleIds = new uint[](articleCounter);
@@ -72,7 +73,7 @@ contract ChainList {
         for (i = 0; i < numberOfArticlesForSale; i++) {
             forSale[i] = articleIds[i];
         }
-        return (forSale);
+        return forSale;
     }
 
     // buy an article

@@ -21,10 +21,14 @@ contract('ChainList', function (accounts) {
     // Test case: check initial values
     it('should be initialized with empty values', function () {
         return ChainList.deployed().then(function (instance) {
+            chainListInstance = instance;
             return instance.getNumberOfArticles();
         }).then(function (data) {
             assert.equal(data, 0, 'number of articles should be 0');
-        });
+            return chainListInstance.getArticlesForSale();
+        }).then(function (data) {
+            assert.equal(data.length, 0, 'must be 0 article for sale');
+        })
     });
 
     // Test case: sell an article
