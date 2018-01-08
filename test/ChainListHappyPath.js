@@ -110,7 +110,7 @@ contract('ChainList', function (accounts) {
     });
 
     // Test case: buy the first article
-    it('should let use buy the first article', function () {
+    it('should let us buy the first article', function () {
         return ChainList.deployed().then(function (instance) {
             chainListInstance = instance;
             articleId = 1;
