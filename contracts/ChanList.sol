@@ -1,57 +1,107 @@
 pragma solidity ^0.4.2;
 
 contract ChainList {
+    // Custom types
+    struct Article {
+        uint id;
+        address seller;
+        address buyer;
+        string name;
+        string description;
+        uint256 price;
+    }
+
     // State variables
-    address seller;
-    address buyer;
-    string name;
-    string description;
-    uint256 price;
+    mapping(uint => Article) public articles;
+    uint articleCounter;
 
     // Events
-    event sellArticleEvent(address indexed _seller, string _name, uint256 _price);
-    event buyArticleEvent(address indexed _seller, address indexed _buyer, string _name, uint256 _price);
+    event sellArticleEvent(
+        uint indexed _id,
+        address indexed _seller,
+        string _name,
+        uint256 _price
+    );
+    event buyArticleEvent(
+        uint indexed _id,
+        address indexed _seller,
+        address indexed _buyer,
+        string _name,
+        uint256 _price
+    );
 
     // sell an article
     function sellArticle(string _name, string _description, uint256 _price) public {
-        seller = msg.sender;
-        name = _name;
-        description = _description;
-        price = _price;
-        sellArticleEvent(seller, name, price);
+        articleCounter++;
+
+        articles[articleCounter] = Article(
+            articleCounter,
+            msg.sender,
+            0x0,
+            _name,
+            _description,
+            _price
+        );
+
+        sellArticleEvent(articleCounter, msg.sender, _name, _price);
     }
 
-    // get the article
-    function getArticle() public constant returns (
-        address _seller,
-        address _buyer,
-        string _name,
-        string _description,
-        uint256 _price) {
-        return (seller, buyer, name, description, price);
+    // fetch the number of articles in the contract
+    function getNumberOfArticles() public constant returns (uint) {
+        return (articleCounter);
+    }
+
+    // fetch and returns all article IDs available for sale
+    function getArticleForSale() public constant returns (uint[]) {
+        // there should be at least 1 article
+        require(articleCounter > 0);
+
+        // prepare output arrays
+        uint[] memory articleIds = new uint[](articleCounter);
+
+        uint numberOfArticlesForSale = 0;
+        for (uint i = 1; i <= articleCounter; i++) {
+            if (articles[i].buyer == 0x0) {
+                articleIds[numberOfArticlesForSale] = articles[i].id;
+                numberOfArticlesForSale++;
+            }
+        }
+
+        // copy result to smaller array
+        uint[] memory forSale = new uint[](numberOfArticlesForSale);
+        for (i = 0; i < numberOfArticlesForSale; i++) {
+            forSale[i] = articleIds[i];
+        }
+        return (forSale);
     }
 
     // buy an article
-    function buyArticle() payable public {
-        // should be ready for sale
-        require(seller != 0x00);
+    function buyArticle(uint _id) payable public {
+        // there should be at least 1 article
+        require(articleCounter > 0);
+
+        // the article should exist
+        require(_id > 0 && _id <= articleCounter);
+
+        // retrieve the article
+        Article storage article = articles[_id];
 
         // should not be sold
-        require(buyer == 0x00);
+        require(article.buyer == 0x00);
 
         // you cannot by your own article
-        require(msg.sender != seller);
+        require(msg.sender != article.seller);
 
         // the value send transacted corresponds to the article price
-        require(msg.value == price);
+        require(msg.value == article.price);
 
         // keep the buyer's information
-        buyer = msg.sender;
+        article.buyer = msg.sender;
 
         // the buyer can buy the article
-        seller.transfer(msg.value);
+        article.seller.transfer(msg.value);
 
         //trigger event
-        buyArticleEvent(seller, buyer, name, price);
+        buyArticleEvent(_id, article.seller, article.buyer, article.name, article.price);
     }
 }
