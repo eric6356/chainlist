@@ -52,7 +52,7 @@ contract ChainList {
     }
 
     // fetch and returns all article IDs available for sale
-    function getArticleForSale() public constant returns (uint[]) {
+    function getArticlesForSale() public constant returns (uint[]) {
         // there should be at least 1 article
         require(articleCounter > 0);
 
