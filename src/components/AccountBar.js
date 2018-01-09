@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from "react-redux";
 
 import { Account } from "../types";
-import { setCurrentAccount } from "../actions";
+import { setCurrentAccount, getCurrentBalance } from "../actions";
 
 
 const AccountBar = ({web3, accounts, currentAccount, currentBalance, setCurrentAccount}) => {
@@ -55,6 +55,9 @@ AccountBar.propTypes = {
 export default connect(
     state => state,
     dispatch => ({
-        setCurrentAccount: i => () => dispatch(setCurrentAccount(i))
+        setCurrentAccount: i => () => {
+            dispatch(setCurrentAccount(i));
+            dispatch(getCurrentBalance());
+        }
     })
 )(AccountBar);
