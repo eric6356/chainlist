@@ -31,7 +31,7 @@ export default (state = defaultState, action) => {
             return {
                 ...state,
                 isBusy: true
-            }
+            };
         case 'GET_CURRENT_BALANCE_DONE':
             return {
                 ...state,

@@ -28,4 +28,14 @@ export const getCurrentBalance = () => (dispatch, getState) => {
         .then((balance) => {
             dispatch(getCurrentBalanceDone(balance.toString()));
         });
-}
+};
+
+export const sellArticleStart = () => ({type: "SELL_ARTICLE_START"});
+
+export const sellArticleDone = (contractId) => ({type: "SELL_ARTICLE_DONE", contractId});
+
+export const sellArticle = ({name, price, description}) => (dispatch, getState) => {
+    dispatch(sellArticleStart());
+    const {web3} = getState();
+    // return web3.eth.sell
+};

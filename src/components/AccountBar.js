@@ -8,10 +8,9 @@ import { setCurrentAccount, getCurrentBalance } from "../actions";
 
 
 const AccountBar = ({web3, accounts, currentAccount, currentBalance, setCurrentAccount}) => {
-    const balanceEther = web3.utils.fromWei(currentBalance);
     return (
         <div style={{margin: "20px 0"}}>
-            <span className="tag is-medium">{balanceEther} ETH</span>
+            <span className="tag is-medium">{web3.utils.fromWei(currentBalance, "ether")} ETH</span>
             <div className="is-pulled-right">
                 <div className="dropdown is-hoverable">
                     <div className="dropdown-trigger">
@@ -31,7 +30,7 @@ const AccountBar = ({web3, accounts, currentAccount, currentBalance, setCurrentA
                                       'dropdown-item',
                                       {'is-active': currentAccount && (account.address === currentAccount.address)}
                                     )}
-                                    onClick={setCurrentAccount(index)}
+                                    onClick={() => setCurrentAccount(index)}
                                 >
                                     {account.address}
                                 </a>
@@ -55,7 +54,7 @@ AccountBar.propTypes = {
 export default connect(
     state => state,
     dispatch => ({
-        setCurrentAccount: i => () => {
+        setCurrentAccount: i => {
             dispatch(setCurrentAccount(i));
             dispatch(getCurrentBalance());
         }
