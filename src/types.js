@@ -15,7 +15,7 @@ export const Event = PropTypes.shape({
 
 export const Article = PropTypes.shape({
     id: PropTypes.number,
-    seller: PropTypes.string,
+    seller: Account,
     buyer: Account,
     name: PropTypes.string,
     description: PropTypes.string,

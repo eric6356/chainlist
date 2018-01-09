@@ -9,7 +9,7 @@ import reducer from './reducers'
 import {getAccounts, initContract} from './actions'
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
-const store = createStore(reducer, composeEnhancers(applyMiddleware(thunkMiddleware)));
+const store = createStore(reducer, composeEnhancers(applyMiddleware(thunkMiddleware )));
 
 store.dispatch(getAccounts());
 store.dispatch(initContract());

@@ -17,7 +17,7 @@ const App = () => (
             <div className="column">
                 <ArticleList />
             </div>
-            <div className="column is-one-third">
+            <div className="column is-narrow">
                 <EventList />
             </div>
         </div>

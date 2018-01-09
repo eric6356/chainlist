@@ -19,12 +19,15 @@ export default (state = defaultState, action) => {
         case 'INIT_CONTRACT_START':
         case 'SELL_ARTICLE_START':
         case 'LISTEN_TO_EVENTS_START':
+        case 'GET_ALL_ARTICLES_START':
+        case 'BUY_ARTICLE_START':
             return {
                 ...state,
                 isBusy: true
             };
         case 'SELL_ARTICLE_DONE':
         case 'LISTEN_TO_EVENTS_DONE':
+        case 'GET_ALL_ARTICLES_DONE':
             return {
                 ...state,
                 isBusy: false
@@ -56,6 +59,11 @@ export default (state = defaultState, action) => {
             return {
                 ...state,
                 events: [...state.events, action.event]
+            };
+        case 'GET_ARTICLE_DONE':
+            return {
+                ...state,
+                articles: [...state.articles, action.article]
             };
         default:
             return state

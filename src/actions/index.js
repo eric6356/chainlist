@@ -73,7 +73,8 @@ export const initContract = () => (dispatch, getState) => {
                 };
             }
             dispatch(initContractDone(ChainList));
-            return dispatch(listenToEvents());
+            dispatch(listenToEvents());
+            dispatch(getAllArticles());
         })
 };
 
@@ -123,3 +124,53 @@ const parseEvent = event => ({
     buyer: event.args._buyer && {address: event.args._buyer},
     price: parseInt(event.args._price, 10),
 });
+
+export const getAllArticlesStart = () => ({type: 'GET_ALL_ARTICLES_START'});
+export const getAllArticlesDone = () => ({type: 'GET_ALL_ARTICLES_DONE'});
+
+export const getArticleDone = (article) => ({type: 'GET_ARTICLE_DONE', article});
+
+const getAllArticles = () => (dispatch, getState) => {
+    dispatch(getAllArticlesStart);
+    const {ChainList} = getState();
+    let chainListInstance;
+    ChainList.deployed().then(instance => {
+        chainListInstance = instance;
+        // return chainListInstance.getArticlesForSale();
+        return chainListInstance.getNumberOfArticles();
+    }).then(number => Promise.all(
+        Array.from({length: number}, (x, i) => i + 1)
+            .map(articleId => chainListInstance.articles(articleId)
+            .then(article => dispatch(getArticleDone(parseArticle(article)))))
+    )).then(() => dispatch(getAllArticlesDone()));
+};
+
+const parseArticle = article => ({
+    id: parseInt(article[0], 10),
+    seller: {address: article[1]},
+    buyer: article[2] && {address: article[2]},
+    name: article[3],
+    description: article[4],
+    price: parseInt(article[5], 10)
+});
+
+export const buyArticleStart = () => ({type: 'BUY_ARTICLE_START'});
+
+export const buyArticle = (articleId) => (dispatch, getState) => {
+    dispatch(buyArticleStart());
+    const {ChainList, currentAccount, articles} = getState();
+    const article = articles.filter(article => article.id === articleId)[0];
+    let chainListInstance;
+    ChainList.deployed().then(instance => {
+        chainListInstance = instance;
+        chainListInstance.buyArticle(articleId, {
+            from: currentAccount.address,
+            value: article.price, // FIXME,
+            gas: 500000,
+        }).then(result => {
+            console.log(result);
+        })
+    })
+};
+
+// TODO: updateArticle
