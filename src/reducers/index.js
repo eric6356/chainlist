@@ -28,6 +28,7 @@ export default (state = defaultState, action) => {
         case 'SELL_ARTICLE_DONE':
         case 'LISTEN_TO_EVENTS_DONE':
         case 'GET_ALL_ARTICLES_DONE':
+        case 'BUY_ARTICLE_DONE':
             return {
                 ...state,
                 isBusy: false
@@ -61,9 +62,16 @@ export default (state = defaultState, action) => {
                 events: [...state.events, action.event]
             };
         case 'GET_ARTICLE_DONE':
+            const articles = state.articles.slice();
+            const article = articles.find(article => article.id === action.article.id);
+            if (article === undefined) {
+                articles.push(action.article);
+            } else {
+                article.buyer = action.article.buyer;
+            }
             return {
                 ...state,
-                articles: [...state.articles, action.article]
+                articles: [...articles]
             };
         default:
             return state

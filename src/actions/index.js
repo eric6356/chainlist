@@ -1,9 +1,9 @@
 import axios from 'axios';
 import TruffleContract from 'truffle-contract';
 
-export const getAccountsStart = () => ({type: 'GET_ACCOUNTS_START'});
+const getAccountsStart = () => ({type: 'GET_ACCOUNTS_START'});
 
-export const getAccountsDone = (accounts) => ({
+const getAccountsDone = (accounts) => ({
     type: 'GET_ACCOUNTS_DONE',
     accounts: accounts.map(account => ({address: account}))
 });
@@ -20,9 +20,9 @@ export const getAccounts = () => (dispatch, getState) => {
 
 export const setCurrentAccount = (i) => ({type: 'SET_CURRENT_ACCOUNT', i});
 
-export const getCurrentBalanceStart = () => ({type: 'GET_CURRENT_BALANCE_START'});
+const getCurrentBalanceStart = () => ({type: 'GET_CURRENT_BALANCE_START'});
 
-export const getCurrentBalanceDone = (balance) => ({type: 'GET_CURRENT_BALANCE_DONE', balance});
+const getCurrentBalanceDone = (balance) => ({type: 'GET_CURRENT_BALANCE_DONE', balance});
 
 export const getCurrentBalance = () => (dispatch, getState) => {
     dispatch(getCurrentBalanceStart());
@@ -33,9 +33,9 @@ export const getCurrentBalance = () => (dispatch, getState) => {
         });
 };
 
-export const sellArticleStart = () => ({type: 'SELL_ARTICLE_START'});
+const sellArticleStart = () => ({type: 'SELL_ARTICLE_START'});
 
-export const sellArticleDone = () => ({type: 'SELL_ARTICLE_DONE'});
+const sellArticleDone = () => ({type: 'SELL_ARTICLE_DONE'});
 
 export const sellArticle = ({name, description, price}) => (dispatch, getState) => {
     dispatch(sellArticleStart());
@@ -53,9 +53,9 @@ export const sellArticle = ({name, description, price}) => (dispatch, getState) 
     }).catch(console.log);
 };
 
-export const initContractStart = () => ({type: 'INIT_CONTRACT_START'});
+const initContractStart = () => ({type: 'INIT_CONTRACT_START'});
 
-export const initContractDone = (ChainList) => ({type: 'INIT_CONTRACT_DONE', ChainList});
+const initContractDone = (ChainList) => ({type: 'INIT_CONTRACT_DONE', ChainList});
 
 export const initContract = () => (dispatch, getState) => {
     dispatch(initContractStart());
@@ -78,7 +78,7 @@ export const initContract = () => (dispatch, getState) => {
         })
 };
 
-export const listenToEvents = () => (dispatch, getState) => {
+const listenToEvents = () => (dispatch, getState) => {
     dispatch(listenToEventsStart());
     const {ChainList} = getState();
     ChainList.deployed().then(instance => {
@@ -108,13 +108,19 @@ export const listenToEvents = () => (dispatch, getState) => {
     });
 };
 
-export const listenToEventsStart = () => ({type: 'LISTEN_TO_EVENTS_START'});
+const listenToEventsStart = () => ({type: 'LISTEN_TO_EVENTS_START'});
 
-export const listenToEventsDone = () => ({type: 'LISTEN_TO_EVENTS_DONE'});
+const listenToEventsDone = () => ({type: 'LISTEN_TO_EVENTS_DONE'});
 
-const articleOnSale = (event) => ({type: 'ARTICLE_ON_SALE', event});
+const articleOnSale = (event) => (dispatch) => {
+    dispatch(getArticle(event.id));
+    dispatch(({type: 'ARTICLE_ON_SALE', event}));
+};
 
-const articleSold = (event) => ({type: 'ARTICLE_SOLD', event});
+const articleSold = (event) => (dispatch) => {
+    dispatch(getArticle(event.id));
+    dispatch(({type: 'ARTICLE_SOLD', event}));
+};
 
 const parseEvent = event => ({
     event: event.event,
@@ -125,23 +131,28 @@ const parseEvent = event => ({
     price: parseInt(event.args._price, 10),
 });
 
-export const getAllArticlesStart = () => ({type: 'GET_ALL_ARTICLES_START'});
-export const getAllArticlesDone = () => ({type: 'GET_ALL_ARTICLES_DONE'});
+const getAllArticlesStart = () => ({type: 'GET_ALL_ARTICLES_START'});
+const getAllArticlesDone = () => ({type: 'GET_ALL_ARTICLES_DONE'});
 
-export const getArticleDone = (article) => ({type: 'GET_ARTICLE_DONE', article});
+const getArticleDone = (article) => ({type: 'GET_ARTICLE_DONE', article});
+
+const getArticle = (articleId) => (dispatch, getState) => {
+    const {ChainList} = getState();
+    ChainList.deployed().then(instance => {
+        return instance.articles(articleId)
+            .then(article => dispatch(getArticleDone(parseArticle(article))));
+    })
+};
 
 const getAllArticles = () => (dispatch, getState) => {
     dispatch(getAllArticlesStart);
     const {ChainList} = getState();
-    let chainListInstance;
     ChainList.deployed().then(instance => {
-        chainListInstance = instance;
-        // return chainListInstance.getArticlesForSale();
-        return chainListInstance.getNumberOfArticles();
+        // return instance.getArticlesForSale();
+        return instance.getNumberOfArticles();
     }).then(number => Promise.all(
         Array.from({length: number}, (x, i) => i + 1)
-            .map(articleId => chainListInstance.articles(articleId)
-            .then(article => dispatch(getArticleDone(parseArticle(article)))))
+            .map(articleId => dispatch(getArticle(articleId)))
     )).then(() => dispatch(getAllArticlesDone()));
 };
 
@@ -154,7 +165,8 @@ const parseArticle = article => ({
     price: parseInt(article[5], 10)
 });
 
-export const buyArticleStart = () => ({type: 'BUY_ARTICLE_START'});
+const buyArticleStart = () => ({type: 'BUY_ARTICLE_START'});
+const buyArticleDone = () => ({type: 'BUY_ARTICLE_DONE'});
 
 export const buyArticle = (articleId) => (dispatch, getState) => {
     dispatch(buyArticleStart());
@@ -165,12 +177,11 @@ export const buyArticle = (articleId) => (dispatch, getState) => {
         chainListInstance = instance;
         chainListInstance.buyArticle(articleId, {
             from: currentAccount.address,
-            value: article.price, // FIXME,
+            value: article.price,
             gas: 500000,
         }).then(result => {
-            console.log(result);
-        })
+            dispatch(buyArticleDone());
+            dispatch(getCurrentBalance());
+        }).catch(console.log);
     })
 };
-
-// TODO: updateArticle

@@ -9,10 +9,11 @@ const ArticleList = (props) => {
     const {articles} = props;
     return (
         <div>
+            Articles
             {articles.map((article, i) => <ArticleItem key={i} {...props} article={article} />)}
         </div>
     );
-}
+};
 
 ArticleList.propTypes = {
     articles: PropTypes.arrayOf(Article),

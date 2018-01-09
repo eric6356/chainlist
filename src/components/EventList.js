@@ -7,6 +7,7 @@ import EventItem from "./EventItem";
 const EventList = ({events, currentAccount}) => {
     return (
         <div style={{width: "300px"}}>
+            Events
             {events.map((event, i) => (
                 <EventItem event={event} currentAccount={currentAccount} key={i} />
             ))}
