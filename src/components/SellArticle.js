@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const SellArticle = ({sellArticle}) => (
-    <button className="button is-primary is-fullwidth" onClick={sellArticle}>
+const SellArticle = () => (
+    // todo
+    <button className="button is-primary is-fullwidth">
         Sell Your Article
     </button>
 );

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {Account, BuyEvent, SellEvent} from "../types";
+import {connect} from "react-redux";
 
 const EventList = ({events, currentAccount}) => {
     return (
@@ -14,4 +15,4 @@ EventList.propTypes = {
     currentAccount: Account,
 };
 
-export default EventList;
+export default connect()(EventList);
