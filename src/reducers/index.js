@@ -1,15 +1,15 @@
 import Web3 from 'web3';
 
-const web3 = new Web3("http://localhost:9545");
-window.web3 = web3;
 
 const defaultState = {
-    web3: web3,
+    web3: new Web3("http://localhost:9545"),
     isBusy: false,
     currentAccount: null,
     currentBalance: '0',
     accounts: [],
-    ChainList: null
+    ChainList: null,
+    articles: [],
+    events: [],
 };
 
 export default (state = defaultState, action) => {
@@ -18,9 +18,16 @@ export default (state = defaultState, action) => {
         case 'GET_CURRENT_BALANCE_START':
         case 'INIT_CONTRACT_START':
         case 'SELL_ARTICLE_START':
+        case 'LISTEN_TO_EVENTS_START':
             return {
                 ...state,
                 isBusy: true
+            };
+        case 'SELL_ARTICLE_DONE':
+        case 'LISTEN_TO_EVENTS_DONE':
+            return {
+                ...state,
+                isBusy: false
             };
         case 'GET_ACCOUNTS_DONE':
             return {
@@ -40,10 +47,22 @@ export default (state = defaultState, action) => {
                 isBusy: false
             };
         case 'INIT_CONTRACT_DONE':
-            window.ChainList = action.ChainList;
             return {
                 ...state,
                 ChainList: action.ChainList
+            };
+        case 'ARTICLE_ON_SALE':
+        case 'ARTICLE_SOLD':
+            const event = {
+                event: action.event.event,
+                id: action.event.args._id, // FIXME: BigNumber
+                seller: action.event.args._seller,
+                buyer: action.event.args._buyer,
+                price: action.event.args._price,  // FIXME: BigNumber
+            };
+            return {
+                ...state,
+                events: [...state.events, event]
             };
         default:
             return state

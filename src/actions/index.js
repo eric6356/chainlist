@@ -35,11 +35,11 @@ export const getCurrentBalance = () => (dispatch, getState) => {
 
 export const sellArticleStart = () => ({type: 'SELL_ARTICLE_START'});
 
-export const sellArticleDone = (contractId) => ({type: 'SELL_ARTICLE_DONE', contractId});
+export const sellArticleDone = () => ({type: 'SELL_ARTICLE_DONE'});
 
 export const sellArticle = ({name, description, price}) => (dispatch, getState) => {
     dispatch(sellArticleStart());
-    const { ChainList, currentAccount } = getState();
+    const {ChainList, currentAccount} = getState();
     return ChainList.deployed().then(instance => {
         return instance.sellArticle(
             name,
@@ -47,7 +47,8 @@ export const sellArticle = ({name, description, price}) => (dispatch, getState) 
             price,
             {from: currentAccount.address, gas: 500000}
         )
-    }).then((receipt) => {
+    }).then((result) => {
+        dispatch(sellArticleDone());
         dispatch(getCurrentBalance());
     }).catch(console.log);
 };
@@ -58,14 +59,14 @@ export const initContractDone = (ChainList) => ({type: 'INIT_CONTRACT_DONE', Cha
 
 export const initContract = () => (dispatch, getState) => {
     dispatch(initContractStart());
-    const { web3 } = getState();
+    const {web3} = getState();
     axios.get('/contracts/ChainList.json')
         .then(res => {
             const ChainList = TruffleContract(res.data);
             ChainList.setProvider(web3.currentProvider);
             // FIXME: https://github.com/trufflesuite/truffle-contract/issues/56#issuecomment-331084530
             if (typeof ChainList.currentProvider.sendAsync !== "function") {
-                ChainList.currentProvider.sendAsync = function() {
+                ChainList.currentProvider.sendAsync = function () {
                     return ChainList.currentProvider.send.apply(
                         ChainList.currentProvider, arguments
                     );
@@ -76,4 +77,40 @@ export const initContract = () => (dispatch, getState) => {
         })
 };
 
-export const listenToEvents  = () => (dispatch, getState) => null; // TODO
+export const listenToEvents = () => (dispatch, getState) => {
+    dispatch(listenToEventsStart());
+    const {ChainList} = getState();
+    ChainList.deployed().then(instance => {
+        instance.sellArticleEvent({}, {
+            fromBlock: 0,
+            toBlock: 'latest'
+        }).watch((err, ev) => {
+            if (!err) {
+                dispatch(articleOnSale(ev))
+            } else {
+                console.log(err);
+            }
+        });
+
+        instance.buyArticleEvent({}, {
+            fromBlock: 0,
+            toBlock: 'latest'
+        }).watch((err, ev) => {
+            if (!err) {
+                dispatch(articleSold(ev))
+            } else {
+                console.log(err);
+            }
+        });
+
+        dispatch(listenToEventsDone());
+    });
+};
+
+export const listenToEventsStart = () => ({type: 'LISTEN_TO_EVENTS_START'});
+
+export const listenToEventsDone = () => ({type: 'LISTEN_TO_EVENTS_DONE'});
+
+const articleOnSale = (event) => ({type: 'ARTICLE_ON_SALE', event});
+
+const articleSold = (event) => ({type: 'ARTICLE_SOLD', event});

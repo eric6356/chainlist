@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {Account, Article} from "../types";
-import {connect} from "react-redux";
+import { Account, Article } from "../types";
+import { connect } from "react-redux";
 
 const ArticleList = ({articles, currentAccount}) => (
     // todo

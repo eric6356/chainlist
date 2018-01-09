@@ -4,15 +4,7 @@ export const Account = PropTypes.shape({
     address: PropTypes.string
 });
 
-export const SellEvent = PropTypes.shape({
-    event: PropTypes.string,
-    id: PropTypes.number,
-    seller: PropTypes.string,
-    name: PropTypes.string,
-    price: PropTypes.number,
-});
-
-export const BuyEvent = PropTypes.shape({
+export const Event = PropTypes.shape({
     event: PropTypes.string,
     id: PropTypes.number,
     seller: PropTypes.string,
