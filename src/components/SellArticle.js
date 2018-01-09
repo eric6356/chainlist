@@ -41,6 +41,7 @@ class SellArticle extends React.Component {
         }
 
         this.props.dispatch(sellArticle({name, price, description}));
+        this.hideModal();
     }
 
     render() {
