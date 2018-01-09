@@ -1,5 +1,5 @@
 # ChainList
-This is a course [project](https://github.com/chainskills/chainlist), but I made several improvements.
+This is a course [project](https://github.com/chainskills/chainlist) and I made several improvements.
 
 ## Frontend
 Re-wrote by using
