@@ -14,11 +14,11 @@ const App = () => (
         <AccountBar />
         <SellArticle/>
         <div className="columns" style={{marginTop: "20px"}}>
-            <div className="column is-one-third">
-                <EventList />
-            </div>
             <div className="column">
                 <ArticleList />
+            </div>
+            <div className="column is-one-third">
+                <EventList />
             </div>
         </div>
     </div>

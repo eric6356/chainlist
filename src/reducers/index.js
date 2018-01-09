@@ -53,16 +53,9 @@ export default (state = defaultState, action) => {
             };
         case 'ARTICLE_ON_SALE':
         case 'ARTICLE_SOLD':
-            const event = {
-                event: action.event.event,
-                id: action.event.args._id, // FIXME: BigNumber
-                seller: action.event.args._seller,
-                buyer: action.event.args._buyer,
-                price: action.event.args._price,  // FIXME: BigNumber
-            };
             return {
                 ...state,
-                events: [...state.events, event]
+                events: [...state.events, action.event]
             };
         default:
             return state

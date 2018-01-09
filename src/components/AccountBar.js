@@ -1,10 +1,11 @@
 import React from 'react';
 import classNames from 'classnames/bind';
 import PropTypes from 'prop-types';
-import { connect } from "react-redux";
+import {connect} from "react-redux";
 
-import { Account } from "../types";
-import { setCurrentAccount, getCurrentBalance } from "../actions";
+import {Account} from "../types";
+import {setCurrentAccount, getCurrentBalance} from "../actions";
+import {compareAccount} from "../utils";
 
 
 const AccountBar = ({web3, accounts, currentAccount, currentBalance, setCurrentAccount}) => {
@@ -23,18 +24,17 @@ const AccountBar = ({web3, accounts, currentAccount, currentBalance, setCurrentA
                     </div>
                     <div className="dropdown-menu">
                         <div className="dropdown-content">
-                            {accounts.map((account, index) => (
-                                <a
-                                    key={index}
-                                    className={classNames(
-                                      'dropdown-item',
-                                      {'is-active': currentAccount && (account.address === currentAccount.address)}
-                                    )}
-                                    onClick={() => setCurrentAccount(index)}
-                                >
-                                    {account.address}
-                                </a>
-                            ))}
+                            {accounts.map((account, index) => {
+                                return (
+                                    <a
+                                        key={index}
+                                        className={classNames('dropdown-item', {'is-active': compareAccount(currentAccount, account)})}
+                                        onClick={() => setCurrentAccount(index)}
+                                    >
+                                        {account.address}
+                                    </a>
+                                )
+                            })}
                         </div>
                     </div>
                 </div>

@@ -86,7 +86,7 @@ export const listenToEvents = () => (dispatch, getState) => {
             toBlock: 'latest'
         }).watch((err, ev) => {
             if (!err) {
-                dispatch(articleOnSale(ev))
+                dispatch(articleOnSale(parseEvent(ev)))
             } else {
                 console.log(err);
             }
@@ -97,7 +97,7 @@ export const listenToEvents = () => (dispatch, getState) => {
             toBlock: 'latest'
         }).watch((err, ev) => {
             if (!err) {
-                dispatch(articleSold(ev))
+                dispatch(articleSold(parseEvent(ev)))
             } else {
                 console.log(err);
             }
@@ -114,3 +114,12 @@ export const listenToEventsDone = () => ({type: 'LISTEN_TO_EVENTS_DONE'});
 const articleOnSale = (event) => ({type: 'ARTICLE_ON_SALE', event});
 
 const articleSold = (event) => ({type: 'ARTICLE_SOLD', event});
+
+const parseEvent = event => ({
+    event: event.event,
+    name: event.args._name,
+    id: parseInt(event.args._id, 10),
+    seller: event.args._seller && {address: event.args._seller},
+    buyer: event.args._buyer && {address: event.args._buyer},
+    price: parseInt(event.args._price, 10),
+});
