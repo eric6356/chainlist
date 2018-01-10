@@ -26,6 +26,9 @@ migrate
 yarn start
 ```
 
+## Deployment
+ChainList.sol is deployed to the rinkeby network, visit my [gh-pages](https://eric6356.github.io/chainlist/) with metamask to try it out.
+
 ## Screen Shots
 ![](screenshots/1.png)  
 ![](screenshots/2.png)  
