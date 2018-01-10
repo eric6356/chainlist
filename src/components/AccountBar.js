@@ -13,28 +13,35 @@ const AccountBar = ({web3, accounts, currentAccount, currentBalance, setCurrentA
         <div style={{margin: "20px 0"}}>
             <span className="tag is-medium">{web3.utils.fromWei(currentBalance, "ether")} ETH</span>
             <div className="is-pulled-right">
-                <div className="dropdown is-hoverable">
-                    <div className="dropdown-trigger">
-                        <button className="button">
-                            <span>{currentAccount && currentAccount.address}</span>
-                            <span className="icon is-small">
-                                <i className="fa fa-angle-down"/>
-                            </span>
-                        </button>
+                <div className="field has-addons">
+                    <div className="control">
+                        <input className="input" type="text" value={currentAccount ? currentAccount.address : ""} readOnly style={{width: "440px"}}/>
                     </div>
-                    <div className="dropdown-menu">
-                        <div className="dropdown-content">
-                            {accounts.map((account, index) => {
-                                return (
-                                    <a
-                                        key={index}
-                                        className={classNames('dropdown-item', {'is-active': compareAccount(currentAccount, account)})}
-                                        onClick={() => setCurrentAccount(index)}
-                                    >
-                                        {account.address}
-                                    </a>
-                                )
-                            })}
+                    <div className="control">
+                        <div className="dropdown is-hoverable is-right">
+                            <div className="dropdown-trigger">
+                                <button className="button">
+                                    {/*<span style={{}}>{currentAccount && currentAccount.address}</span>*/}
+                                    <span className="icon is-small">
+                                        <i className="fa fa-angle-down"/>
+                                    </span>
+                                </button>
+                            </div>
+                            <div className="dropdown-menu">
+                                <div className="dropdown-content">
+                                    {accounts.map((account, index) => {
+                                        return (
+                                            <a
+                                                key={index}
+                                                className={classNames('dropdown-item', {'is-active': compareAccount(currentAccount, account)})}
+                                                onClick={() => setCurrentAccount(index)}
+                                            >
+                                                {account.address}
+                                            </a>
+                                        )
+                                    })}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
