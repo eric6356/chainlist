@@ -60,7 +60,7 @@ const initContractDone = (ChainList) => ({type: 'INIT_CONTRACT_DONE', ChainList}
 export const initContract = () => (dispatch, getState) => {
     dispatch(initContractStart());
     const {web3} = getState();
-    axios.get('/contracts/ChainList.json')
+    axios.get('contracts/ChainList.json')  // TODO
         .then(res => {
             const ChainList = TruffleContract(res.data);
             ChainList.setProvider(web3.currentProvider);

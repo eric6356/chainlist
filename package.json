@@ -3,19 +3,23 @@
   "version": "0.0.1",
   "description": "",
   "main": "truffle.js",
+  "homepage": "https://eric6356.github.io/chainlist",
   "directories": {
     "test": "test"
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "yarn build:contract && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "test-contract": "truffle test"
+    "test-contract": "truffle test",
+    "build:contract": "truffle compile && rimraf public/contracts && cp -R build/contracts public",
+    "deploy": "gh-pages -d build"
   },
   "author": "Zhongjie He",
   "license": "ISC",
   "devDependencies": {
+    "gh-pages": "^1.1.0",
     "react-scripts": "1.0.17",
     "truffle": "^4.0.4"
   },
